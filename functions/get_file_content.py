@@ -1,5 +1,20 @@
 import os
 from config import MAX_CHARS
+from google.genai import types
+
+schema_get_file_content = types.FunctionDeclaration(
+    name="get_file_content",
+    description="Read file contents in the specified directory, constrained to the working directory.",
+    parameters=types.Schema(
+        type=types.Type.OBJECT,
+        properties={
+            "directory": types.Schema(
+                type=types.Type.STRING,
+                description="The directory to list files from, relative to the working directory. If not provided, lists files in the working directory itself."
+            ),
+        },
+    ),
+)
 
 def get_files_content(working_directory, file_path):
     abs_working_dir = os.path.abspath(working_directory)
@@ -15,7 +30,7 @@ def get_files_content(working_directory, file_path):
         with open(abs_file_path, "r") as f:
             content = f.read(MAX_CHARS)
             if os.path.getsize(abs_file_path) > MAX_CHARS:
-                content += (f'[...Fil "{file_path}" truncated at {MAX_CHARS} characters]')
+                content += (f'[...File "{file_path}" truncated at {MAX_CHARS} characters]')
 
         return content
     except Exception as e:
